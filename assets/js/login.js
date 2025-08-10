@@ -32,7 +32,8 @@ async function enviarLogin(event) {
                 if (data.rol === 'admin') {
                     window.location.href = '../views/admin_dashboard.php';
                 } else {
-                    window.location.href = '../views/productos_admin.php';
+                    // Redirigir a catálogo para usuarios no administradores
+                    window.location.href = '../views/catalogo.php';
                 }
             }, 1200);
         } else {

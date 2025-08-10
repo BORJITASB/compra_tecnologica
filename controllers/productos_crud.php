@@ -8,7 +8,12 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] !== 'admin') {
 require_once("../config/config.php");
 
 // Agregar producto
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['accion'] === 'agregar') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['accion'] ?? '') === 'agregar') {
+    // Verificación CSRF
+    if (!hash_equals($_SESSION['csrf_token'] ?? '', $_POST['csrf_token'] ?? '')) {
+        header('Location: ../views/productos_admin.php?mensaje=Token+inválido&tipo=danger');
+        exit;
+    }
     $nombre = trim($_POST['nombre']);
     $descripcion = trim($_POST['descripcion']);
     $id_categoria = intval($_POST['id_categoria']);
@@ -19,7 +24,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['accion'] === 'agregar') {
 }
 
 // Editar producto
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['accion'] === 'editar') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['accion'] ?? '') === 'editar') {
+    if (!hash_equals($_SESSION['csrf_token'] ?? '', $_POST['csrf_token'] ?? '')) {
+        header('Location: ../views/productos_admin.php?mensaje=Token+inválido&tipo=danger');
+        exit;
+    }
     $id = intval($_POST['id_producto']);
     $nombre = trim($_POST['nombre']);
     $descripcion = trim($_POST['descripcion']);

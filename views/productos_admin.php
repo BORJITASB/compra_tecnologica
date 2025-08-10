@@ -4,6 +4,10 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] !== 'admin') {
     header('Location: login.php');
     exit;
 }
+// CSRF token
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 require_once("../config/config.php");
 
 
@@ -34,9 +38,10 @@ $categorias = $stmtCat->fetchAll(PDO::FETCH_ASSOC);
     <!-- Formulario para agregar producto -->
     <div class="card mb-4">
         <div class="card-body">
-            <h5>Agregar Producto</h5>
+            <h5 class="mb-3" style="font-weight:600;">Agregar Producto</h5>
             <form method="POST" action="../controllers/productos_crud.php">
                 <input type="hidden" name="accion" value="agregar">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                 <div class="mb-3">
                     <label>Nombre</label>
                     <input type="text" class="form-control" name="nombre" required>
@@ -97,6 +102,7 @@ $categorias = $stmtCat->fetchAll(PDO::FETCH_ASSOC);
             <form method="POST" action="../controllers/productos_crud.php">
                 <input type="hidden" name="accion" value="editar">
                 <input type="hidden" name="id_producto" value="<?= $prodEdit['id_producto'] ?>">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                 <div class="mb-3">
                     <label>Nombre</label>
                     <input type="text" class="form-control" name="nombre" value="<?= htmlspecialchars($prodEdit['nombre']) ?>" required>

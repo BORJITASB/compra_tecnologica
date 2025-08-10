@@ -2,7 +2,7 @@
 
 session_start();
 
-file_put_contents('../debug_session.txt', print_r($_SESSION, true));
+// Eliminado volcado inseguro de la sesión a un archivo debug.
 header('Content-Type: application/json');
 
 require_once("../config/config.php");
