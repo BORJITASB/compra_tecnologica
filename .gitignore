@@ -1,0 +1,7 @@
+# Ignorar archivos sensibles
+.env
+# Otros posibles archivos a ignorar
+/vendor/
+/node_modules/
+.DS_Store
+Thumbs.db
