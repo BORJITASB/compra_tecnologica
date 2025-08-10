@@ -1,5 +1,5 @@
 /* Estilos compartidos para vistas públicas (login, registro, catálogo, gestión) */
-body.app-body { min-height:100vh; margin:0; font-family:'Segoe UI',Arial,sans-serif; color:#f1f5f9; background:#121416 url('../img/fondo_tecnologico.jpg') center/cover no-repeat fixed; }
+body.app-body { min-height:100vh; margin:0; font-family:'Segoe UI',Arial,sans-serif; color:#f1f5f9; background:#121416 url('../img/productos/fondo_tecnologico.jpg') center/cover no-repeat fixed; }
 body.app-body::before { content:""; position:fixed; inset:0; background:linear-gradient(135deg,rgba(12,14,18,0.88),rgba(30,34,40,0.88)); backdrop-filter:blur(4px); z-index:0; }
 .app-wrapper { position:relative; z-index:1; padding:3rem 1rem; }
 .nav-top { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); backdrop-filter:blur(6px); border-radius:14px; padding:.85rem 1.25rem; display:flex; align-items:center; gap:1rem; margin-bottom:1.75rem; }

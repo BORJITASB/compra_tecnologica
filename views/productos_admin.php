@@ -11,8 +11,12 @@ if (empty($_SESSION['csrf_token'])) {
 }
 require_once("../config/config.php");
 
-// Productos + categoría (nombre)
-$stmt = $pdo->query("SELECT p.id_producto, p.nombre, p.descripcion, c.nombre AS categoria, p.id_categoria FROM productos p JOIN categorias c ON p.id_categoria = c.id_categoria ORDER BY p.id_producto DESC");
+// Verificar si existe columna imagen (tolerante)
+$hasImagen = false;
+try { $pdo->query("SELECT imagen FROM productos LIMIT 1"); $hasImagen = true; } catch(Exception $e) { $hasImagen = false; }
+// Productos + categoría (nombre) + posible imagen
+$selectCols = 'p.id_producto, p.nombre, p.descripcion, c.nombre AS categoria, p.id_categoria' . ($hasImagen ? ', p.imagen' : '');
+$stmt = $pdo->query("SELECT $selectCols FROM productos p JOIN categorias c ON p.id_categoria = c.id_categoria ORDER BY p.id_producto DESC");
 $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 // Categorías para selects
 $stmtCat = $pdo->query("SELECT id_categoria, nombre FROM categorias ORDER BY nombre ASC");
@@ -45,7 +49,7 @@ if (isset($_GET['editar'])) {
         .products-table tbody tr:hover td { color:#ffffff !important; }
     </style>
 </head>
-<body class="app-body">
+<body class="app-body" style="background:#121416 url('../assets/img/fondo_tecnologico.jpg') center/cover no-repeat fixed;">
 <div class="app-wrapper container">
     <!-- Barra de navegación superior -->
     <div class="nav-top mb-4">
@@ -68,7 +72,7 @@ if (isset($_GET['editar'])) {
         <div class="col-lg-5">
             <div class="glass-box h-100 d-flex flex-column">
                 <h2 class="glass-title mb-2 fs-5">Agregar Producto</h2>
-                <form method="POST" action="../controllers/productos_crud.php" class="mt-1">
+                <form method="POST" action="../controllers/productos_crud.php" class="mt-1" enctype="multipart/form-data">
                     <input type="hidden" name="accion" value="agregar">
                     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                     <div class="mb-3">
@@ -79,6 +83,13 @@ if (isset($_GET['editar'])) {
                         <label for="descripcion" class="form-label">Descripción</label>
                         <textarea id="descripcion" name="descripcion" class="form-control" rows="3" required></textarea>
                     </div>
+                    <?php if ($hasImagen): ?>
+                    <div class="mb-3">
+                        <label for="imagen" class="form-label">Imagen (Opcional)</label>
+                        <input type="file" id="imagen" name="imagen" accept="image/*" class="form-control">
+                        <div class="form-text">Formatos: jpg, png, webp, gif. Máx 2MB.</div>
+                    </div>
+                    <?php endif; ?>
                     <div class="mb-3">
                         <label for="id_categoria" class="form-label">Categoría</label>
                         <select id="id_categoria" name="id_categoria" class="form-select" required>
@@ -105,8 +116,9 @@ if (isset($_GET['editar'])) {
                     <table class="table table-sm table-glass products-table align-middle mb-0">
                         <thead>
                             <tr>
-                                <th style="width:17%">Nombre</th>
-                                <th style="width:43%">Descripción</th>
+                                <?php if ($hasImagen): ?><th style="width:10%">Img</th><?php endif; ?>
+                                <th style="width:<?= $hasImagen? '15%' : '17%' ?>">Nombre</th>
+                                <th style="width:<?= $hasImagen? '40%' : '43%' ?>">Descripción</th>
                                 <th style="width:20%">Categoría</th>
                                 <th style="width:20%" class="text-center">Acciones</th>
                             </tr>
@@ -114,6 +126,15 @@ if (isset($_GET['editar'])) {
                         <tbody>
                         <?php if($productos): foreach($productos as $prod): ?>
                             <tr>
+                                <?php if ($hasImagen): ?>
+                                <td>
+                                    <?php if (!empty($prod['imagen'])): ?>
+                                        <img src="../assets/img/<?= htmlspecialchars($prod['imagen']) ?>" alt="thumb" style="width:48px;height:48px;object-fit:cover;border-radius:8px;filter:brightness(.9);">
+                                    <?php else: ?>
+                                        <div style="width:48px;height:48px;border:1px dashed rgba(255,255,255,.25);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.65rem;color:#94a3b8;">N/A</div>
+                                    <?php endif; ?>
+                                </td>
+                                <?php endif; ?>
                                 <td class="fw-semibold"><?= htmlspecialchars($prod['nombre']) ?></td>
                                 <td class="text-truncate" style="max-width:260px;"><?= htmlspecialchars($prod['descripcion']) ?></td>
                                 <td><?= htmlspecialchars($prod['categoria']) ?></td>
@@ -139,10 +160,13 @@ if (isset($_GET['editar'])) {
             <h2 class="glass-title fs-5 mb-0">Editar: <?= htmlspecialchars($prodEdit['nombre']) ?></h2>
             <a href="productos_admin.php" class="btn btn-sm btn-outline-light">Cancelar</a>
         </div>
-        <form method="POST" action="../controllers/productos_crud.php" class="row g-3">
+        <form method="POST" action="../controllers/productos_crud.php" class="row g-3" enctype="multipart/form-data">
             <input type="hidden" name="accion" value="editar">
             <input type="hidden" name="id_producto" value="<?= $prodEdit['id_producto'] ?>">
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+            <?php if ($hasImagen && !empty($prodEdit['imagen'])): ?>
+                <input type="hidden" name="imagen_actual" value="<?= htmlspecialchars($prodEdit['imagen']) ?>">
+            <?php endif; ?>
             <div class="col-md-4">
                 <label class="form-label" for="edit_nombre">Nombre</label>
                 <input type="text" id="edit_nombre" name="nombre" class="form-control" value="<?= htmlspecialchars($prodEdit['nombre']) ?>" required>
@@ -159,6 +183,23 @@ if (isset($_GET['editar'])) {
                 <label class="form-label" for="edit_descripcion">Descripción</label>
                 <textarea id="edit_descripcion" name="descripcion" class="form-control" rows="3" required><?= htmlspecialchars($prodEdit['descripcion']) ?></textarea>
             </div>
+            <?php if ($hasImagen): ?>
+            <div class="col-md-6">
+                <label class="form-label" for="edit_imagen">Imagen (Opcional)</label>
+                <input type="file" id="edit_imagen" name="imagen" accept="image/*" class="form-control">
+                <div class="form-text">Dejar vacío para conservar la actual.</div>
+            </div>
+            <div class="col-md-6 d-flex align-items-end">
+                <?php if (!empty($prodEdit['imagen'])): ?>
+                    <div>
+                        <div class="small text-muted mb-1">Actual:</div>
+                        <img src="../assets/img/<?= htmlspecialchars($prodEdit['imagen']) ?>" alt="actual" style="width:90px;height:90px;object-fit:cover;border:1px solid rgba(255,255,255,.25);border-radius:10px;">
+                    </div>
+                <?php else: ?>
+                    <div class="small text-muted">Sin imagen actual.</div>
+                <?php endif; ?>
+            </div>
+            <?php endif; ?>
             <div class="col-12 d-flex gap-2">
                 <button class="btn btn-soft">💾 Guardar Cambios</button>
                 <a href="productos_admin.php" class="btn btn-outline-light">Cancelar</a>
