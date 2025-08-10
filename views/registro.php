@@ -42,7 +42,7 @@ try {
         <div id="mensaje" class="mt-3"></div>
     </form>
 </div>
-<script src="../assets/registro.js"></script>
+<script src="../assets/js/registro.js"></script>
 </body>
 </html>
 

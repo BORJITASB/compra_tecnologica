@@ -1,4 +1,9 @@
 <?php
+session_start();
+if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] !== 'admin') {
+    header('Location: login.php');
+    exit;
+}
 require_once("../config/config.php");
 
 

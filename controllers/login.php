@@ -1,7 +1,10 @@
 <?php
 
 session_start();
+
+file_put_contents('../debug_session.txt', print_r($_SESSION, true));
 header('Content-Type: application/json');
+
 require_once("../config/config.php");
 
 $input = json_decode(file_get_contents('php://input'), true);

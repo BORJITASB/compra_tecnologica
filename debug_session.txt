@@ -1,0 +1,6 @@
+Array
+(
+    [id_usuario] => 1
+    [nombre] => jean
+    [rol] => admin
+)
