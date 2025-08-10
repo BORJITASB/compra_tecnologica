@@ -30,9 +30,9 @@ async function enviarLogin(event) {
             mostrarMensajeLogin('Ingreso exitoso. Redirigiendo...', 'success');
             setTimeout(() => {
                 if (data.rol === 'admin') {
-                    window.location.href = '../views/admin_dashboard.html';
+                    window.location.href = '../views/admin_dashboard.php';
                 } else {
-                    window.location.href = '../views/catalogo.html';
+                    window.location.href = '../views/productos_admin.php';
                 }
             }, 1200);
         } else {

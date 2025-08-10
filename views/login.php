@@ -21,6 +21,6 @@
         <div id="mensaje" class="mt-3"></div>
     </form>
     <p class="mt-3">¿No tienes cuenta? <a href="registro_user.php">Regístrate aquí</a></p>
-    <script src="../controllers/login.js"></script>
+    <script src="../assets/js/login.js"></script>
 </body>
 </html>
