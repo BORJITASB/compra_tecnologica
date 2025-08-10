@@ -16,13 +16,13 @@ formUsuario.addEventListener('submit', async (e) => { // Evento submit.
     mensajeUser.textContent = 'Complete todos los campos.'; // Mensaje error.
     mensajeUser.className = 'text-danger'; // Estilo.
     return; // Fin.
-  }
+}
 
   if (password !== confirm_password) { // Coincidencia.
     mensajeUser.textContent = 'Las contraseñas no coinciden.'; // Mensaje.
     mensajeUser.className = 'text-danger'; // Estilo.
     return; // Fin.
-  }
+}
 
   try { // Bloque try.
     const resp = await fetch('../controllers/registro_usuario.php', { // Fetch.
@@ -46,5 +46,5 @@ formUsuario.addEventListener('submit', async (e) => { // Evento submit.
   } catch (err) { // Error red.
     mensajeUser.textContent = 'Error de red o servidor.'; // Mensaje genérico.
     mensajeUser.className = 'text-danger'; // Estilo.
-  }
+}
 });
